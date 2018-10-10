@@ -128,25 +128,54 @@ screen.orientation.removeEventListener = function(a,b,c) {
     return evtTarget.removeEventListener(a,b,c);
 };
 
-function setOrientationProperties() {
-    switch (window.orientation) {
+  function setOrientationProperties() {
+    console.log(window.screen);
+    console.log(window.orientation);
+    if (window.orientation !== undefined) {
+      switch (window.orientation) {
         case 0:
-            screen.orientation.type = 'portrait-primary';
-            break;
+          screen.orientation.type = 'portrait-primary';
+          break;
         case 90:
-            screen.orientation.type = 'landscape-primary';
-            break;
+          screen.orientation.type = 'landscape-primary';
+          break;
         case 180:
-            screen.orientation.type = 'portrait-secondary';
-            break;
+          screen.orientation.type = 'portrait-secondary';
+          break;
         case -90:
-            screen.orientation.type = 'landscape-secondary';
-            break;
+          screen.orientation.type = 'landscape-secondary';
+          break;
         default:
-            screen.orientation.type = 'portrait-primary';
-            break;
+          screen.orientation.type = 'portrait-primary';
+          break;
+      }
+      screen.orientation.angle = window.orientation || 0;
+    } else {
+      if (window.screen !== undefined) {
+        var orientationWin = window.screen.msOrientation || (window.screen.orientation || window.screen.mozOrientation || {}).type;
+        console.log(orientationWin);
+        if (orientationWin === "landscape-primary") {
+          screen.orientation.type = 'landscape-primary';
+          screen.orientation.angle = 90;
+        } else if (orientationWin === "landscape-secondary") {
+          screen.orientation.type = 'landscape-secondary';
+          screen.orientation.angle = -90;
+        } else if (orientationWin === "portrait-secondary") {
+          screen.orientation.angle = 180;
+          screen.orientation.type = 'portrait-secondary';
+        } else if (orientationWin === "portrait-primary") {
+          screen.orientation.angle = 0;
+          screen.orientation.type = 'portrait-primary';
+        } else if (orientationWin === undefined) {
+          console.log("orientation not supported on windows");
+          screen.orientation.type = 'portrait-primary';
+          screen.orientation.angle =  0;
+        }
+      } else {
+        screen.orientation.type = 'portrait-primary';
+        screen.orientation.angle = 0;
+      }
     }
-    screen.orientation.angle = window.orientation || 0;
 
 }
 window.addEventListener("orientationchange", orientationchange, true);
